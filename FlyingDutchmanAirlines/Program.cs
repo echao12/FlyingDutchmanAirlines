@@ -1,12 +1,13 @@
 ﻿using System;
+using Microsoft.AspNetCore.Hosting;
 
 namespace FlyingDutchmanAirlines
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main(string[] args) // etry point to all C# programs
         {
-            Console.WriteLine("Hello World!");
+            
         }
     }
 }
