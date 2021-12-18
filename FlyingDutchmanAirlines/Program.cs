@@ -13,13 +13,15 @@ namespace FlyingDutchmanAirlines
             //create a host to run the web service.
             //host process is responsible for app startup & lifetime management.
             //minimum req: Host configures server & request processing pipelines
-            IHost host = 
-                Host.CreateDefaultBuilder() //returns a hostbulder with default settings
-                        .ConfigureWebHostDefaults( builder =>
-                            {
-                                builder.UseUrls("http://0.0.0.0:8080"); //specify url&port we wanna use for this builder
-                            }).Build(); //build & return resulting host.
-                host.Run(); // start host
+            InitializeHost();
         }
+
+        //lambda expression to build host
+        private static void InitializeHost() => 
+            Host.CreateDefaultBuilder() //returns a hostbulder with default settings
+                    .ConfigureWebHostDefaults( builder =>
+                        {
+                            builder.UseUrls("http://0.0.0.0:8080"); //specify url&port we wanna use for this builder
+                        }).Build().Run(); //build & run resulting host.   
     }
 }
