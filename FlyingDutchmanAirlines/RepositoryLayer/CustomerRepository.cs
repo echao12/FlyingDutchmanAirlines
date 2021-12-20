@@ -1,11 +1,20 @@
 using System.Linq;
-
+using System.Threading.Tasks;
+using FlyingDutchmanAirlines.DatabaseLayer;
+using FlyingDutchmanAirlines.DatabaseLayer.Models;
 namespace FlyingDutchmanAirlines.RepositoryLayer {
     public class CustomerRepository {
-        public bool CreateCustomer(string name) {
+        public async Task<bool> CreateCustomer(string name) {
             if(IsInvalidCustomerName(name)){
                 return false;
             }
+            Customer newCustomer = new Customer(name);
+            //note: DbContext impolements IDisposable so we needa explicitly dispose of it or it will have a connection for infinite time
+            // "using" statement is good for IDisposable objects. It defines a scope where the object will be disposed at the end of it.
+            using (FlyingDutchmanAirlinesContext context = new FlyingDutchmanAirlinesContext()){ //creating var/scope for context
+                context.Customers.Add(newCustomer);
+                await context.SaveChangesAsync();
+            }//context is auto disposed here
             return true;
         }
 

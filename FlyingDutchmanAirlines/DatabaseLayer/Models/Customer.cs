@@ -5,16 +5,19 @@ using System.Collections.Generic;
 
 namespace FlyingDutchmanAirlines.DatabaseLayer.Models
 {
-    public partial class Customer
+    
+    public sealed class Customer //sealed b/c we dont want any inheriting and modifying db access in a diff class
     {
-        public Customer()
-        {
-            Bookings = new HashSet<Booking>();
-        }
-
         public int CustomerId { get; set; }
         public string Name { get; set; }
 
-        public virtual ICollection<Booking> Bookings { get; set; }
+        public ICollection<Booking> Bookings { get; set; }    
+        public Customer(string name)
+        {
+            Bookings = new HashSet<Booking>();
+            Name = name;
+        }
+
+
     }
 }
