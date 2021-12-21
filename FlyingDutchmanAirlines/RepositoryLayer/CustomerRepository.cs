@@ -2,6 +2,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using FlyingDutchmanAirlines.DatabaseLayer;
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
+using FlyingDutchmanAirlines.Exceptions;
+
 namespace FlyingDutchmanAirlines.RepositoryLayer {
     public class CustomerRepository {
         private readonly FlyingDutchmanAirlinesContext _context;
@@ -32,6 +34,14 @@ namespace FlyingDutchmanAirlines.RepositoryLayer {
             //check for null/empty, then use linq to check each char for an invalid character.
             return string.IsNullOrEmpty(str) || 
                 str.Any(x => forbiddenCharacters.Contains(x));
+        }
+
+        public async Task<Customer> GetCustomerByName(string name){
+            if(IsInvalidCustomerName(name)){
+                throw new CustomerNotFoundException();
+            }
+            return _context.Customers.FirstOrDefault(c => c.Name == name)
+                ?? throw new CustomerNotFoundException(); // recall '??' is null coalescing operator. returns the right value instead if result is null.
         }
     }
 }
