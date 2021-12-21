@@ -27,7 +27,7 @@ namespace FlyingDutchmanAirlines_Tests.RepositoryLayer
         [TestMethod]
         public async Task CreateCustomer_Success() {
             //check for valid default object creation
-            CustomerRepository repository = new CustomerRepository();
+            CustomerRepository repository = new CustomerRepository(_context);
             Assert.IsNotNull(repository);
 
             bool result = await repository.CreateCustomer("Rin");
@@ -35,8 +35,17 @@ namespace FlyingDutchmanAirlines_Tests.RepositoryLayer
         }
 
         [TestMethod]
+        public async Task CreateCustomer_Failure_DatabaseAccessError() {
+            CustomerRepository repo = new CustomerRepository(null);
+            Assert.IsNotNull(repo);
+
+            bool result = await repo.CreateCustomer("Rin");
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
         public async Task CreateCustomer_Failure_NameIsNull() {
-            CustomerRepository repo = new CustomerRepository();
+            CustomerRepository repo = new CustomerRepository(_context);
             Assert.IsNotNull(repo);
 
             bool result = await repo.CreateCustomer(null);
@@ -45,7 +54,7 @@ namespace FlyingDutchmanAirlines_Tests.RepositoryLayer
 
         [TestMethod]
         public async Task CreateCustomer_Failure_NameIsEmpty() {
-            CustomerRepository repo = new CustomerRepository();
+            CustomerRepository repo = new CustomerRepository(_context);
             Assert.IsNotNull(repo);
 
             bool result = await repo.CreateCustomer("");
@@ -60,7 +69,7 @@ namespace FlyingDutchmanAirlines_Tests.RepositoryLayer
         [DataRow('&')]
         [DataRow('*')]
         public async Task CreateCustomer_Failure_NameContainsInvalidCharacters(char invalidCharacter){
-            CustomerRepository repo = new CustomerRepository();
+            CustomerRepository repo = new CustomerRepository(_context);
             Assert.IsNotNull(repo);
 
             bool result = await repo.CreateCustomer("Rin" + invalidCharacter);
