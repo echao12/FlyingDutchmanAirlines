@@ -87,11 +87,9 @@ namespace FlyingDutchmanAirlines_Tests.RepositoryLayer
         }
 
         [TestMethod]
-        public async Task GetCustomerByName_NotSameName() {
-            Customer customer = new Customer("ron");
-            Assert.IsNotNull(customer); //check for null
-            Customer dbCustomer = await _context.Customers.FirstAsync();
-            Assert.AreNotEqual(customer, dbCustomer);
+        [ExpectedException(typeof(CustomerNotFoundException))]
+        public async Task LookingForCustomer_Failure_NameNotInDatabase() {
+            await _repository.GetCustomerByName("Ron");
         }
         
         //force exception test. checking if the correct exception is thrown with invalid inputs.
