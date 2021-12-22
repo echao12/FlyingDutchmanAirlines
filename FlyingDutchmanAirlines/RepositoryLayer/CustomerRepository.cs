@@ -1,4 +1,7 @@
+using System.Collections.Generic;// for comparer class
+using System.Diagnostics.CodeAnalysis;// for [DisallowNull] attribute
 using System.Linq;
+using System.Security.Cryptography; // for random number generator
 using System.Threading.Tasks;
 using FlyingDutchmanAirlines.DatabaseLayer;
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
@@ -43,5 +46,7 @@ namespace FlyingDutchmanAirlines.RepositoryLayer {
             return _context.Customers.FirstOrDefault(c => c.Name == name)
                 ?? throw new CustomerNotFoundException(); // recall '??' is null coalescing operator. returns the right value instead if result is null.
         }
+
+
     }
 }

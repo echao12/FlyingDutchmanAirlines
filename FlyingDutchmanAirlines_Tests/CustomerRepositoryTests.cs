@@ -6,6 +6,7 @@ using FlyingDutchmanAirlines.DatabaseLayer;//for db context
 using Microsoft.EntityFrameworkCore.InMemory;
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
 using FlyingDutchmanAirlines.Exceptions;
+using System;
 
 namespace FlyingDutchmanAirlines_Tests.RepositoryLayer
 {
@@ -81,7 +82,16 @@ namespace FlyingDutchmanAirlines_Tests.RepositoryLayer
         public async Task GetCustomerByName_Success() {
             Customer customer = await _repository.GetCustomerByName("Rin");
             Assert.IsNotNull(customer); //check for null
-            
+            Customer dbCustomer = await _context.Customers.FirstAsync();
+            Assert.AreEqual(customer, dbCustomer);
+        }
+
+        [TestMethod]
+        public async Task GetCustomerByName_NotSameName() {
+            Customer customer = new Customer("ron");
+            Assert.IsNotNull(customer); //check for null
+            Customer dbCustomer = await _context.Customers.FirstAsync();
+            Assert.AreNotEqual(customer, dbCustomer);
         }
         
         //force exception test. checking if the correct exception is thrown with invalid inputs.
