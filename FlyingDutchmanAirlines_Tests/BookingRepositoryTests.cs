@@ -7,6 +7,7 @@ using System;
 using System.Threading.Tasks;
 using FlyingDutchmanAirlines_Tests.Stubs;
 using FlyingDutchmanAirlines.Exceptions;
+using FlyingDutchmanAirlines.DatabaseLayer.Models;
 
 namespace FlyingDutchmanAirlines_Tests.RepositoryLayer {
     [TestClass]
@@ -28,11 +29,6 @@ namespace FlyingDutchmanAirlines_Tests.RepositoryLayer {
         }
 
         [TestMethod]
-        public void CreateBooking_Success() {
-
-        }
-
-        [TestMethod]
         [DataRow(-1, 0)]
         [DataRow(0, -1)]
         [DataRow(-1, -1)]
@@ -45,6 +41,16 @@ namespace FlyingDutchmanAirlines_Tests.RepositoryLayer {
         [ExpectedException(typeof(CouldNotAddBookingToDatabaseException))]
         public async Task CreateBooking_Failure_DatabaseError() {
             await _repository.CreateBooking(0, 1);
+        }
+
+        [TestMethod]
+        public async void CreateBooking_Success() {
+            await _repository.CreateBooking(1, 0);
+            Booking booking = await _context.Bookings.FirstAsync();
+
+            Assert.IsNotNull(booking);
+            Assert.AreEqual(1, booking.CustomerId);
+            Assert.AreEqual(0, booking.FlightNumber);
         }
     }
 }
