@@ -30,7 +30,6 @@ namespace FlyingDutchmanAirlines.RepositoryLayer {
                 Console.WriteLine($"Exception during database query: {exception.Message}");
                 throw new CouldNotAddBookingToDatabaseException();
             }
-
         }
     }
 }
