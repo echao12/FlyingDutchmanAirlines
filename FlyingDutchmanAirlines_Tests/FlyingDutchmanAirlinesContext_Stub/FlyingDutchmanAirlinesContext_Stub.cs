@@ -20,12 +20,12 @@ namespace FlyingDutchmanAirlines_Tests.Stubs {
                 ChangeTracker.Entries().Where(e => e.State == EntityState.Added);
             //fetch only bookings from pending changes
             IEnumerable<Booking> bookings = pendingChanges.Select(e => e.Entity).OfType<Booking>();
-            if(bookings.Any(b => b.BookingId != 1)){
+            if(bookings.Any(b => b.CustomerId != 1)){
                 throw new Exception("Database Error for Bookings!");
             }
 
             IEnumerable<Airport> airports = pendingChanges.Select(e => e.Entity).OfType<Airport>();
-            if(!airports.Any()) {
+            if(airports.Any(x => x.AirportId == 10)) {
                 throw new Exception("Database Error for Airports!");
             }
 
@@ -40,14 +40,3 @@ namespace FlyingDutchmanAirlines_Tests.Stubs {
         }
     }
 }
-/*
-public override async Task<int> SaveChangesAsync(CancellationToken  cancellationToken = default) {
-  IEnumerable<EntityEntry> pendingChanges = ChangeTracker.Entries().Where(e => e.State == EntityState.Added);
-  if (pendingChanges.Any(c => ((Booking) c.Entity).CustomerId != 1)) {
-    throw new Exception("Database Error!");
-  }
- 
-  await base.SaveChangesAsync(cancellationToken);
-  return 1;
-}
-*/
