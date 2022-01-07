@@ -18,13 +18,15 @@ namespace FlyingDutchmanAirlines_Tests.Stubs {
             // check pending changes to db for changes to be added.
             IEnumerable<EntityEntry> pendingChanges = 
                 ChangeTracker.Entries().Where(e => e.State == EntityState.Added);
-            // parse for only entities to be added
-            IEnumerable<object> entities = pendingChanges.Select(e => e.Entity);
-            // look for booking entity and check CustomerId.
+            //fetch only bookings from pending changes
             IEnumerable<Booking> bookings = pendingChanges.Select(e => e.Entity).OfType<Booking>();
-            
-            if(bookings.Any(b => b.CustomerId != 1)) {
-                throw new Exception("Database Error!");
+            if(bookings.Any(b => b.BookingId != 1)){
+                throw new Exception("Database Error for Bookings!");
+            }
+
+            IEnumerable<Airport> airports = pendingChanges.Select(e => e.Entity).OfType<Airport>();
+            if(!airports.Any()) {
+                throw new Exception("Database Error for Airports!");
             }
 
             //note: cancellation token can cancel database queries by calling cancellationtoken.cancel()
@@ -33,8 +35,19 @@ namespace FlyingDutchmanAirlines_Tests.Stubs {
             //invoking the base's saveChanges method now.
             await base.SaveChangesAsync(cancellationToken);
             
-            return 1;
+            return 0;
 
         }
     }
 }
+/*
+public override async Task<int> SaveChangesAsync(CancellationToken  cancellationToken = default) {
+  IEnumerable<EntityEntry> pendingChanges = ChangeTracker.Entries().Where(e => e.State == EntityState.Added);
+  if (pendingChanges.Any(c => ((Booking) c.Entity).CustomerId != 1)) {
+    throw new Exception("Database Error!");
+  }
+ 
+  await base.SaveChangesAsync(cancellationToken);
+  return 1;
+}
+*/
