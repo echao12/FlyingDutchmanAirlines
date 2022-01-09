@@ -11,9 +11,9 @@ using FlyingDutchmanAirlines_Tests.Stubs;
 using System.Collections.Generic;
 using FlyingDutchmanAirlines.Exceptions;
 
-namespace FlyingDutchmanAirlines_Tests {
+namespace FlyingDutchmanAirlines_Tests.RepositoryLayer {
     [TestClass]
-    public class FlyingDutchmanAirlinesTests {
+    public class AirportRepositoryTests {
         private FlyingDutchmanAirlinesContext _context;
         private AirportRepository _repository;
 
