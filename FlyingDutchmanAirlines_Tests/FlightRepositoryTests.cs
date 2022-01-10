@@ -4,6 +4,8 @@ using FlyingDutchmanAirlines.DatabaseLayer;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using FlyingDutchmanAirlines_Tests.Stubs;
+using System;
+using FlyingDutchmanAirlines.Exceptions;
 
 namespace FlyingDutchmanAirlines_Tests.RepositoryLayer {
     [TestClass]
@@ -20,6 +22,23 @@ namespace FlyingDutchmanAirlines_Tests.RepositoryLayer {
 
             //create repository connected to the db context
             this._repository = new FlightRepository(_context);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public async Task GetFlightByFlightNumber_Failure_InvalidOriginAirportId() {
+            await _repository.GetFlightByFlightNumber(0, -1, 0);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public async Task GetFlightByFlightNumber_Failure_InvalidDestinationAirportId(){
+            await _repository.GetFlightByFlightNumber(0, 0, -1);
+        }
+        [TestMethod]
+        [ExpectedException(typeof(FlightNotFoundException))]
+        public async Task GetFlightByFlightNumber_Failure_InvalidFlightNumber(){
+            await _repository.GetFlightByFlightNumber(-1, 0, 0);
         }
     }
 }
