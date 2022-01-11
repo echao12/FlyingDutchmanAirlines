@@ -3,6 +3,7 @@ using FlyingDutchmanAirlines.DatabaseLayer.Models;
 using FlyingDutchmanAirlines.Exceptions;
 using System;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlyingDutchmanAirlines.RepositoryLayer {
     public class FlightRepository {
@@ -12,7 +13,7 @@ namespace FlyingDutchmanAirlines.RepositoryLayer {
         }
 
         public async Task<Flight> GetFlightByFlightNumber(int flightNumber, int originAriportId, int destinationAirportId) {
-            if(!flightNumber.IsPositive() || !originAriportId.IsPositive()){
+            if(!destinationAirportId.IsPositive() || !originAriportId.IsPositive()){
                 Console.WriteLine("Argument exception in GetFlightByFlightNumber.\n" 
                     + $"originAirportId = {originAriportId} destinationAirportId = {destinationAirportId}");
                 throw new ArgumentException("Invalid arguments were provided!");
@@ -21,7 +22,7 @@ namespace FlyingDutchmanAirlines.RepositoryLayer {
                 Console.WriteLine($"Could not find flight in GetFlightByFlightNymber. flightNumber = {flightNumber}");
                 throw new FlightNotFoundException();
             }
-            return new Flight();
+            return await _context.Flights.FirstOrDefaultAsync(f => f.FlightNumber == flightNumber) ?? throw new FlightNotFoundException();
         }
     }
 }
