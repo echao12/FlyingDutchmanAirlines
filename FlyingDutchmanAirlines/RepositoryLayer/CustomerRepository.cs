@@ -6,11 +6,19 @@ using System.Threading.Tasks;
 using FlyingDutchmanAirlines.DatabaseLayer;
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
 using FlyingDutchmanAirlines.Exceptions;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace FlyingDutchmanAirlines.RepositoryLayer {
     public class CustomerRepository {
         private readonly FlyingDutchmanAirlinesContext _context;
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public CustomerRepository(){
+            if(Assembly.GetCallingAssembly().FullName == Assembly.GetExecutingAssembly().FullName){
+                throw new System.Exception("This constructor should only be used for testing");
+            }
+        }
         public CustomerRepository(FlyingDutchmanAirlinesContext context) {
             this._context = context;
         }
@@ -39,7 +47,7 @@ namespace FlyingDutchmanAirlines.RepositoryLayer {
                 str.Any(x => forbiddenCharacters.Contains(x));
         }
 
-        public async Task<Customer> GetCustomerByName(string name){
+        public virtual async Task<Customer> GetCustomerByName(string name){
             if(IsInvalidCustomerName(name)){
                 throw new CustomerNotFoundException();
             }
