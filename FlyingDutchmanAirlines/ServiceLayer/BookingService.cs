@@ -1,3 +1,5 @@
+using FlyingDutchmanAirlines.DatabaseLayer.Models;
+using FlyingDutchmanAirlines.Exceptions;
 using FlyingDutchmanAirlines.RepositoryLayer;
 using System.Threading.Tasks;
 using System;
@@ -13,7 +15,26 @@ namespace FlyingDutchmanAirlines.ServiceLayer{
         }
 
         public async Task<(bool, Exception)> CreateBooking(string customerName, int flightId){
-            return (true, null);
+            if(String.IsNullOrEmpty(customerName) || !flightId.IsPositive()){
+                throw new ArgumentException();
+            }
+            //fetch customer
+            try{
+                Customer customer;
+                try{
+                    customer = await _CustomerRepo.GetCustomerByName(customerName);
+                }catch(CustomerNotFoundException){
+                    //customer not found, create customer and try again.
+                    await _CustomerRepo.CreateCustomer(customerName);
+                    return await CreateBooking(customerName, flightId);
+                }
+                //create the booking
+                await _BookingRepo.CreateBooking(customer.CustomerId, flightId);
+                return (true, null);
+            }catch(Exception exception){
+                //error creating the booking
+                return (false, exception);
+            }
         }
     }
 }
