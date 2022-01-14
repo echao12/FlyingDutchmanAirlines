@@ -23,9 +23,7 @@ namespace FlyingDutchmanAirlines_Tests.RepositoryLayer {
 
             //add a flight entry to the database
             Flight flight = new Flight{
-                FlightNumber = 1,
-                Origin = 1,
-                Destination = 2
+                FlightNumber = 1
             };
             _context.Flights.Add(flight);
 
@@ -38,38 +36,25 @@ namespace FlyingDutchmanAirlines_Tests.RepositoryLayer {
         [TestMethod]
         public async Task GetFlightByFlightNumber_Success() {
             //grab a flight from the repo
-            Flight flight = await _repository.GetFlightByFlightNumber(1, 1, 2);
+            Flight flight = await _repository.GetFlightByFlightNumber(1);
             Assert.IsNotNull(flight);
             //query database for the same flight
             Flight dbFlight = await _context.Flights.FirstAsync(f => f.FlightNumber == 1);
             Assert.IsNotNull(dbFlight);
 
             Assert.AreEqual(dbFlight.FlightNumber, flight.FlightNumber);
-            Assert.AreEqual(dbFlight.Origin, flight.Origin);
-            Assert.AreEqual(dbFlight.Destination, flight.Destination);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public async Task GetFlightByFlightNumber_Failure_InvalidOriginAirportId() {
-            await _repository.GetFlightByFlightNumber(0, -1, 0);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public async Task GetFlightByFlightNumber_Failure_InvalidDestinationAirportId(){
-            await _repository.GetFlightByFlightNumber(0, 0, -1);
-        }
         [TestMethod]
         [ExpectedException(typeof(FlightNotFoundException))]
         public async Task GetFlightByFlightNumber_Failure_InvalidFlightNumber(){
-            await _repository.GetFlightByFlightNumber(-1, 0, 0);
+            await _repository.GetFlightByFlightNumber(-1);
         }
 
         [TestMethod]
         [ExpectedException(typeof(FlightNotFoundException))]
         public async Task GetFlightByFlightNumber_Faulure_DatabaseException(){
-            await _repository.GetFlightByFlightNumber(2, 1, 2);
+            await _repository.GetFlightByFlightNumber(2);
         }
     }
 }

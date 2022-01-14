@@ -34,9 +34,10 @@ namespace FlyingDutchmanAirlines_Tests.ServiceLayer{
             _mockBookRepo.Setup(bookRepo => bookRepo.CreateBooking(0, 0)).Returns(Task.CompletedTask);
             _mockCustRepo.Setup(custRepo => custRepo.GetCustomerByName("Leo Tolstoy"))
                     .Returns(Task.FromResult(new Customer("Leo Tolstoy")));
+            _mockFlightRepo.Setup(flightRepo => flightRepo.GetFlightByFlightNumber(0))
+                    .ReturnsAsync(new Flight());
             
             (bool result, Exception exception) = await _bookService.CreateBooking("Leo Tolstoy", 0);
-            
             Assert.IsTrue(result);
             Assert.IsNull(exception);
         }
@@ -63,10 +64,11 @@ namespace FlyingDutchmanAirlines_Tests.ServiceLayer{
             //setup the mock calls for repository fns to throw exceptions for testing
             _mockBookRepo.Setup(bookRepo => bookRepo.CreateBooking(0,1)) //for alice cuz her custId = 0. should throw ArgumentException.
                                             .Throws(new ArgumentException());
-            
             //setup customer profiles for the mock
             _mockCustRepo.Setup(custRepo => custRepo.GetCustomerByName("alice")) 
                                                     .Returns(Task.FromResult(new Customer("alice"){ CustomerId = 0}));
+            _mockFlightRepo.Setup(flightRepo => flightRepo.GetFlightByFlightNumber(1)).ReturnsAsync(new Flight());
+            
             //recall that we constructed the repo mock's to return exceptions as stated above.
             (bool result, Exception exception) = await _bookService.CreateBooking("alice", 1);// note: alice's id = 0.
             Assert.IsFalse(result);
@@ -83,6 +85,15 @@ namespace FlyingDutchmanAirlines_Tests.ServiceLayer{
                                                     .Returns(Task.FromResult(new Customer("jake"){CustomerId = 1}));
             
             (bool result, Exception exception) = await _bookService.CreateBooking("jake", 2);
+            Assert.IsFalse(result);
+            Assert.IsNotNull(exception);
+            Assert.IsInstanceOfType(exception, typeof(CouldNotAddBookingToDatabaseException));
+        }
+        
+        [TestMethod]
+        public async Task CreateBooking_Failure_FlightNotInDatabase(){
+            _mockFlightRepo.Setup(flightRepo => flightRepo.GetFlightByFlightNumber(1)).Throws(new FlightNotFoundException());
+            (bool result, Exception exception) = await _bookService.CreateBooking("Rin", 1);
             Assert.IsFalse(result);
             Assert.IsNotNull(exception);
             Assert.IsInstanceOfType(exception, typeof(CouldNotAddBookingToDatabaseException));

@@ -23,12 +23,7 @@ namespace FlyingDutchmanAirlines.RepositoryLayer {
             this._context = context;
         }
 
-        public async Task<Flight> GetFlightByFlightNumber(int flightNumber, int originAriportId, int destinationAirportId) {
-            if(!destinationAirportId.IsPositive() || !originAriportId.IsPositive()){
-                Console.WriteLine("Argument exception in GetFlightByFlightNumber.\n" 
-                    + $"originAirportId = {originAriportId} destinationAirportId = {destinationAirportId}");
-                throw new ArgumentException("Invalid arguments were provided!");
-            }
+        public virtual async Task<Flight> GetFlightByFlightNumber(int flightNumber) {
             if(!flightNumber.IsPositive()) {
                 Console.WriteLine($"Could not find flight in GetFlightByFlightNymber. flightNumber = {flightNumber}");
                 throw new FlightNotFoundException();

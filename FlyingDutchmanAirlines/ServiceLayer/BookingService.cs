@@ -18,10 +18,13 @@ namespace FlyingDutchmanAirlines.ServiceLayer{
 
         public async Task<(bool, Exception)> CreateBooking(string customerName, int flightId){
             if(String.IsNullOrEmpty(customerName) || !flightId.IsPositive()){
-                throw new ArgumentException();
+                throw new ArgumentException("BookingService.CreateBooking() => Invalid Arguments!");
             }
-            //fetch customer
+            //verify flightId & fetch customer
             try{
+                if(await FlightExistsInDatabase(flightId) == false){
+                    throw new CouldNotAddBookingToDatabaseException();
+                }
                 Customer customer;
                 try{
                     customer = await _customerRepo.GetCustomerByName(customerName);
@@ -36,6 +39,14 @@ namespace FlyingDutchmanAirlines.ServiceLayer{
             }catch(Exception exception){
                 //error creating the booking
                 return (false, exception);
+            }
+        }
+
+        public async Task<bool> FlightExistsInDatabase(int flightId){
+            try{
+                return (await _flightRepo.GetFlightByFlightNumber(flightId) != null);
+            }catch(FlightNotFoundException){
+                return false;
             }
         }
     }
