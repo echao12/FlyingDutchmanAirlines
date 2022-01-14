@@ -23,6 +23,8 @@ namespace FlyingDutchmanAirlines.RepositoryLayer {
         public BookingRepository(FlyingDutchmanAirlinesContext context){
             this._context = context;
         }
+
+        //note: to mock method calls, we need to make the original methods virtual so Mock can override. 
         public virtual async Task CreateBooking(int customerId, int flightNumber) {
             if(!customerId.IsPositive() || !flightNumber.IsPositive()) {
                 Console.WriteLine(

@@ -8,6 +8,7 @@ using FlyingDutchmanAirlines.DatabaseLayer.Models;
 using FlyingDutchmanAirlines.Exceptions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlyingDutchmanAirlines.RepositoryLayer {
     public class CustomerRepository {
@@ -51,7 +52,7 @@ namespace FlyingDutchmanAirlines.RepositoryLayer {
             if(IsInvalidCustomerName(name)){
                 throw new CustomerNotFoundException();
             }
-            return _context.Customers.FirstOrDefault(c => c.Name == name)
+            return await _context.Customers.FirstOrDefaultAsync(c => c.Name == name)
                 ?? throw new CustomerNotFoundException(); // recall '??' is null coalescing operator. returns the right value instead if result is null.
         }
 

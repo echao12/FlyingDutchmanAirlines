@@ -6,12 +6,14 @@ using System;
 
 namespace FlyingDutchmanAirlines.ServiceLayer{
     public class BookingService{
-        private readonly BookingRepository _BookingRepo;
-        private readonly CustomerRepository _CustomerRepo;
+        private readonly BookingRepository _bookingRepo;
+        private readonly CustomerRepository _customerRepo;
+        private readonly FlightRepository _flightRepo;
 
-        public BookingService(BookingRepository bookRepo, CustomerRepository custRepo){
-            this._BookingRepo = bookRepo;
-            this._CustomerRepo = custRepo;
+        public BookingService(BookingRepository bookRepo, CustomerRepository custRepo, FlightRepository flightRepo){
+            this._bookingRepo = bookRepo;
+            this._customerRepo = custRepo;
+            this._flightRepo = flightRepo;
         }
 
         public async Task<(bool, Exception)> CreateBooking(string customerName, int flightId){
@@ -22,14 +24,14 @@ namespace FlyingDutchmanAirlines.ServiceLayer{
             try{
                 Customer customer;
                 try{
-                    customer = await _CustomerRepo.GetCustomerByName(customerName);
+                    customer = await _customerRepo.GetCustomerByName(customerName);
                 }catch(CustomerNotFoundException){
                     //customer not found, create customer and try again.
-                    await _CustomerRepo.CreateCustomer(customerName);
+                    await _customerRepo.CreateCustomer(customerName);
                     return await CreateBooking(customerName, flightId);
                 }
                 //create the booking
-                await _BookingRepo.CreateBooking(customer.CustomerId, flightId);
+                await _bookingRepo.CreateBooking(customer.CustomerId, flightId);
                 return (true, null);
             }catch(Exception exception){
                 //error creating the booking
