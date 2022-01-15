@@ -5,6 +5,7 @@ using FlyingDutchmanAirlines.Exceptions;
 using System.Linq;
 using System;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace FlyingDutchmanAirlines.RepositoryLayer {
     public class AirportRepository {
@@ -14,7 +15,13 @@ namespace FlyingDutchmanAirlines.RepositoryLayer {
         public AirportRepository(FlyingDutchmanAirlinesContext context) {
             this._context = context;
         }
-        public async Task<Airport> GetAirportById(int airportId){
+        public AirportRepository(){
+            //ensure only called during tests
+            if(Assembly.GetCallingAssembly().FullName == Assembly.GetExecutingAssembly().FullName){
+                throw new Exception("This constructor should only be used during testing.");
+            }
+        }  
+        public virtual async Task<Airport> GetAirportById(int airportId){
             //validate
             if(airportId < 0){
                 Console.WriteLine($"Argument Exception in GetAirportById!\nAirportId = {airportId}");
