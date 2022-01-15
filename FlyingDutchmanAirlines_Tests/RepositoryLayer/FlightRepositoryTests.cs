@@ -7,6 +7,7 @@ using FlyingDutchmanAirlines_Tests.Stubs;
 using System;
 using FlyingDutchmanAirlines.Exceptions;
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
+using System.Collections.Generic;
 
 namespace FlyingDutchmanAirlines_Tests.RepositoryLayer {
     [TestClass]
@@ -23,11 +24,21 @@ namespace FlyingDutchmanAirlines_Tests.RepositoryLayer {
 
             //add a flight entry to the database
             Flight flight = new Flight{
-                FlightNumber = 1
+                FlightNumber = 1,
+                Origin = 1,
+                Destination = 2
             };
-            _context.Flights.Add(flight);
 
+            Flight flight2 = new Flight{
+                FlightNumber = 10,
+                Origin = 3,
+                Destination = 4
+            };
+
+            _context.Flights.Add(flight);
+            _context.Flights.Add(flight2);
             await _context.SaveChangesAsync();
+
             //create repository connected to the db context
             this._repository = new FlightRepository(_context);
             Assert.IsNotNull(this._repository);
@@ -55,6 +66,12 @@ namespace FlyingDutchmanAirlines_Tests.RepositoryLayer {
         [ExpectedException(typeof(FlightNotFoundException))]
         public async Task GetFlightByFlightNumber_Faulure_DatabaseException(){
             await _repository.GetFlightByFlightNumber(2);
+        }
+
+        [TestMethod]
+        public void GetFlights_Success(){
+            Queue<Flight> flights = _repository.GetFlights();
+            Assert.IsNotNull(flights);
         }
     }
 }

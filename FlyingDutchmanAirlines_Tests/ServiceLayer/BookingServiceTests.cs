@@ -48,11 +48,11 @@ namespace FlyingDutchmanAirlines_Tests.ServiceLayer{
         [DataRow("alice", -1)]
         [DataRow("", -1)]
         [DataRow(null, -1)]
-        [ExpectedException(typeof(ArgumentException))]
         public async Task CreateBooking_Failure_InvalidInputArguments(string name, int id){
             (bool result, Exception exception) = await _bookService.CreateBooking(name, id);
             Assert.IsFalse(result);
             Assert.IsNotNull(exception);
+            Assert.IsInstanceOfType(exception, typeof(ArgumentException));
         }
 
         // *** Testing BookingService to handle potential repository exceptions ***
@@ -94,6 +94,30 @@ namespace FlyingDutchmanAirlines_Tests.ServiceLayer{
         public async Task CreateBooking_Failure_FlightNotInDatabase(){
             _mockFlightRepo.Setup(flightRepo => flightRepo.GetFlightByFlightNumber(1)).Throws(new FlightNotFoundException());
             (bool result, Exception exception) = await _bookService.CreateBooking("Rin", 1);
+            Assert.IsFalse(result);
+            Assert.IsNotNull(exception);
+            Assert.IsInstanceOfType(exception, typeof(CouldNotAddBookingToDatabaseException));
+        }
+
+        //success because we created a customer for the case that they are not in the database.
+        // the exception return type is CustomerNotFound b/c all calls to GetCustomerByName throws that exception.
+        // in a real run, after the exception is caught, the customer will be added to db and the booking would be created.
+        [TestMethod]
+        public async Task CreateBooking_Success_CustomerNotInDatabase(){
+            _mockBookRepo.Setup(bookRepo => bookRepo.CreateBooking(0,0)).Returns(Task.CompletedTask);
+            _mockCustRepo.Setup(custRepo => custRepo.GetCustomerByName("Alice")).Throws(new CustomerNotFoundException());
+            (bool result, Exception exception) = await _bookService.CreateBooking("Alice", 0);
+            Assert.IsFalse(result);
+            Assert.IsNotNull(exception);
+            Assert.IsInstanceOfType(exception, typeof(CustomerNotFoundException));
+        }
+
+        //the case that bookingRepo throws an exception from bookingService's call.
+        [TestMethod]
+        public async Task CreateBooking_Failure_CustomerNotInDatabase_RepositoryFailure(){
+            _mockBookRepo.Setup(bookRepo => bookRepo.CreateBooking(0,0)).Throws(new CouldNotAddBookingToDatabaseException());
+            _mockCustRepo.Setup(custRepo => custRepo.GetCustomerByName("Alice")).ReturnsAsync(new Customer("Alice"){CustomerId = 0});
+            (bool result, Exception exception) = await _bookService.CreateBooking("Alice", 0);
             Assert.IsFalse(result);
             Assert.IsNotNull(exception);
             Assert.IsInstanceOfType(exception, typeof(CouldNotAddBookingToDatabaseException));

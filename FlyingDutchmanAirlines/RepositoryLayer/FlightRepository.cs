@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Collections.Generic;
 
 namespace FlyingDutchmanAirlines.RepositoryLayer {
     public class FlightRepository {
@@ -29,6 +30,14 @@ namespace FlyingDutchmanAirlines.RepositoryLayer {
                 throw new FlightNotFoundException();
             }
             return await _context.Flights.FirstOrDefaultAsync(f => f.FlightNumber == flightNumber) ?? throw new FlightNotFoundException();
+        }
+
+        public virtual Queue<Flight> GetFlights(){
+            Queue<Flight> flights = new();
+            foreach(Flight flight in _context.Flights){
+                flights.Enqueue(flight);
+            }
+            return flights;
         }
     }
 }
