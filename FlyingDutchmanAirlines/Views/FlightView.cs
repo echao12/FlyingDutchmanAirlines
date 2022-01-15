@@ -16,7 +16,7 @@ namespace FlyingDutchmanAirlines.Views{
         public string Code {get; set;}
         public AirportInfo((string city, string code) airport) {
             City = string.IsNullOrWhiteSpace(airport.city) ? "City Not Found" : airport.city;
-            Code = string.IsNullOrWhiteSpace(airport.city) ? "City Not Found" : airport.code;
+            Code = string.IsNullOrWhiteSpace(airport.code) ? "City Code Not Found" : airport.code;
         }
     }
 }

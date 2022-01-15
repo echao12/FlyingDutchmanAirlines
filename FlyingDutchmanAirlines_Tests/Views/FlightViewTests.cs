@@ -15,7 +15,8 @@ namespace FlyingDutchmanAirlines_Tests.Views{
             FlightView view = new FlightView(flightNumber, (originCity, originCityCode), (destinationCity, destinationCityCode));
             Assert.IsNotNull(view);
             Assert.AreEqual(view.FlightNumber, flightNumber);
-            Assert.AreEqual(view.Origin, (originCity, originCityCode));
+            Assert.AreEqual(view.Origin.City, originCity);
+            Assert.AreEqual(view.Origin.Code, originCityCode);
             Assert.AreEqual(view.Destination.City, destinationCity);
             Assert.AreEqual(view.Destination.Code, destinationCityCode);
         }
