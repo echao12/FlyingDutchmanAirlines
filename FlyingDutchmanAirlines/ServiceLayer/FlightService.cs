@@ -35,5 +35,20 @@ namespace FlyingDutchmanAirlines.ServiceLayer{
                     (originAirport.City, originAirport.Iata), (destinationAirport.City, destinationAirport.Iata));
             }
         }
+
+        public virtual async Task<FlightView> GetFlightByFlightNumber(int flightNumber){
+            try {
+                Flight flight = await _flightRepo.GetFlightByFlightNumber(flightNumber);
+                Airport origin = await _airportRepo.GetAirportById(flight.Origin);
+                Airport Destination = await _airportRepo.GetAirportById(flight.Destination);
+
+                FlightView view = new FlightView(flightNumber.ToString(), (origin.City, origin.Iata), (Destination.City, Destination.Iata));
+                return view;
+            }catch(FlightNotFoundException){
+                throw new FlightNotFoundException();
+            }catch(Exception){
+                throw new ArgumentException();
+            }
+        }
     }
 }
