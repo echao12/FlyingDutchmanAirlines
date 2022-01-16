@@ -12,8 +12,6 @@ using FlyingDutchmanAirlines.Views;
 namespace FlyingDutchmanAirlines_Tests.ServiceLayer{
     [TestClass]
     public class FlightServiceTest{
-        
-        FlightService _flightService;
         Mock<FlightRepository> _mockFlightRepo;
         Mock<AirportRepository> _mockAirportRepo;
 
@@ -21,10 +19,7 @@ namespace FlyingDutchmanAirlines_Tests.ServiceLayer{
         public void TestInitialize(){
             _mockFlightRepo = new Mock<FlightRepository>();
             _mockAirportRepo = new Mock<AirportRepository>();
-        }
-
-        [TestMethod]
-        public async Task GetFlights_Success() {
+            //setup the return value for GetFlights()
             Flight flightInDb = new Flight {
                 FlightNumber = 148,
                 Origin = 31,
@@ -32,8 +27,12 @@ namespace FlyingDutchmanAirlines_Tests.ServiceLayer{
             };
             Queue<Flight> mockReturn = new Queue<Flight>(1);
             mockReturn.Enqueue(flightInDb);
-
+            //setup the mock fns to throw an FlightNotFound from looking through airportIds
             _mockFlightRepo.Setup(flightRepo => flightRepo.GetFlights()).Returns(mockReturn);
+        }
+
+        [TestMethod]
+        public async Task GetFlights_Success() {
             _mockAirportRepo.Setup(airportRepo => airportRepo.GetAirportById(31))
                 .ReturnsAsync(new Airport 
                     {
@@ -49,13 +48,36 @@ namespace FlyingDutchmanAirlines_Tests.ServiceLayer{
                         Iata = "UBN"
                     });
             FlightService flightService = new FlightService(_mockFlightRepo.Object, _mockAirportRepo.Object);
-            await foreach(FlightView flightView in flightService.getFlights()){
+            await foreach(FlightView flightView in flightService.GetFlights()){
                 Assert.IsNotNull(flightView);
                 Assert.AreEqual(flightView.FlightNumber, "148");
                 Assert.AreEqual(flightView.Origin.City, "Mexico City");
                 Assert.AreEqual(flightView.Origin.Code, "MEX");
                 Assert.AreEqual(flightView.Destination.City, "Ulaanbaataar");
                 Assert.AreEqual(flightView.Destination.Code, "UBN");
+            };
+        }
+        
+        [TestMethod]
+        [ExpectedException(typeof(FlightNotFoundException))]
+        public async Task GetFlights_Failure_RepositoryException(){
+            _mockAirportRepo.Setup(airportRepo => airportRepo.GetAirportById(31)).ThrowsAsync(new FlightNotFoundException());
+
+            FlightService flightService = new FlightService(_mockFlightRepo.Object, _mockAirportRepo.Object);
+            
+            //using discard(_) because we dont need the values returned.
+            await foreach(FlightView _ in flightService.GetFlights()){
+                ; // no logic. just testing the getFlights()
+            };
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public async Task GetFlights_Failure_RegularException() {
+            FlightService flightService = new FlightService(_mockFlightRepo.Object, _mockAirportRepo.Object);
+            _mockAirportRepo.Setup(airportRepo => airportRepo.GetAirportById(31)).ThrowsAsync(new ArgumentException());
+            await foreach(FlightView _ in flightService.GetFlights()){
+                ;
             }
         }
     }
