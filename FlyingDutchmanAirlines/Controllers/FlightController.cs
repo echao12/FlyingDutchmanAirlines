@@ -8,6 +8,7 @@ using FlyingDutchmanAirlines.Views;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlyingDutchmanAirlines.Controllers{
+    [Route("{controller}")]
     public class FlightController : Controller {
 
         private readonly FlightService _flightService;
@@ -15,6 +16,8 @@ namespace FlyingDutchmanAirlines.Controllers{
         public FlightController(FlightService service){
             _flightService = service;
         }
+
+        [HttpGet]
         public async Task<IActionResult> GetFlights() {
             try{
                 Queue<FlightView> flightViews = new Queue<FlightView>();
@@ -29,6 +32,7 @@ namespace FlyingDutchmanAirlines.Controllers{
             }
         }
 
+        [HttpGet("{flightNumber}")]
         public async Task<IActionResult> GetFlightByFlightNumber(int flightNumber){
             try{
                 if(!flightNumber.IsPositive()){
