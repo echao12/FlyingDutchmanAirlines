@@ -5,6 +5,7 @@ using FlyingDutchmanAirlines.Views;
 using System.Threading.Tasks;
 using System;
 using FlyingDutchmanAirlines.Exceptions;
+using System.Reflection;
 
 namespace FlyingDutchmanAirlines.ServiceLayer{
     public class FlightService{
@@ -17,7 +18,13 @@ namespace FlyingDutchmanAirlines.ServiceLayer{
             this._airportRepo = airportRepo;
         }
 
-        public async IAsyncEnumerable<FlightView> GetFlights(){
+        public FlightService(){
+            if(Assembly.GetExecutingAssembly().FullName == Assembly.GetCallingAssembly().FullName){
+                throw new Exception("This constructor should only be used for testing");
+            }
+        }
+
+        public virtual async IAsyncEnumerable<FlightView> GetFlights(){
             foreach(Flight flight in _flightRepo.GetFlights()){
                 //fetch origin/destination locations info for each flight
                 Airport originAirport;
