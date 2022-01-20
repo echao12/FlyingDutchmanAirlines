@@ -18,6 +18,11 @@ namespace FlyingDutchmanAirlines {
 
             //Map.Controllers scans codebase for any controllers & generates the appropriate routes to the endpoints in the controllers.
             app.UseEndpoints(endpoints => endpoints.MapControllers());
+
+            app.UseSwagger();
+            app.UseSwaggerUI(swagger =>
+                swagger.SwaggerEndpoint("/swagger/v1/swagger.json", "Flying Dutchman Airlines")
+            );
         }
 
         //Config Services is called by host first before Configure().
@@ -37,6 +42,8 @@ namespace FlyingDutchmanAirlines {
             services.AddDbContext<FlyingDutchmanAirlinesContext>(ServiceLifetime.Transient);
             //inject dependencies required for the above repositories
             services.AddTransient(typeof(FlyingDutchmanAirlinesContext), typeof(FlyingDutchmanAirlinesContext));
+
+            services.AddSwaggerGen();
         }
     }
 }

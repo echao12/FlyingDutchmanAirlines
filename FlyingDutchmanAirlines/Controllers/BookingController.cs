@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FlyingDutchmanAirlines.Exceptions;
 using FlyingDutchmanAirlines.JsonData;
 using FlyingDutchmanAirlines.ServiceLayer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlyingDutchmanAirlines.Controllers {
@@ -18,6 +19,8 @@ namespace FlyingDutchmanAirlines.Controllers {
         }
 
         [HttpPost("{flightNumber}")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateBooking([FromBody] BookingData body, int flightNumber){
             if(ModelState.IsValid && flightNumber.IsPositive()){
                 string name = $"{body.FirstName}  {body.LastName}";
@@ -27,9 +30,7 @@ namespace FlyingDutchmanAirlines.Controllers {
                     //good to go
                     return StatusCode((int)HttpStatusCode.Created);
                 }
-                return (exception is CouldNotAddBookingToDatabaseException) ? 
-                    StatusCode((int)HttpStatusCode.NotFound) :
-                    StatusCode((int)HttpStatusCode.InternalServerError);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
             return StatusCode((int) HttpStatusCode.InternalServerError, ModelState.Root.Errors.First().ErrorMessage);
         }

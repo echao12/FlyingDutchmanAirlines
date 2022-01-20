@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FlyingDutchmanAirlines.Exceptions;
 using FlyingDutchmanAirlines.ServiceLayer;
 using FlyingDutchmanAirlines.Views;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlyingDutchmanAirlines.Controllers{
@@ -18,6 +19,9 @@ namespace FlyingDutchmanAirlines.Controllers{
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetFlights() {
             try{
                 Queue<FlightView> flightViews = new Queue<FlightView>();
@@ -33,6 +37,9 @@ namespace FlyingDutchmanAirlines.Controllers{
         }
 
         [HttpGet("{flightNumber}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetFlightByFlightNumber(int flightNumber){
             try{
                 if(!flightNumber.IsPositive()){
