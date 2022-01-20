@@ -34,7 +34,7 @@ namespace FlyingDutchmanAirlines {
             services.AddTransient(typeof(FlightRepository), typeof(FlightRepository));
             services.AddTransient(typeof(CustomerRepository), typeof(CustomerRepository));
             services.AddTransient(typeof(BookingRepository), typeof(BookingRepository));
-            
+            services.AddDbContext<FlyingDutchmanAirlinesContext>(ServiceLifetime.Transient);
             //inject dependencies required for the above repositories
             services.AddTransient(typeof(FlyingDutchmanAirlinesContext), typeof(FlyingDutchmanAirlinesContext));
         }

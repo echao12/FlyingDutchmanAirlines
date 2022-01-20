@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FlyingDutchmanAirlines.Controllers {
     
-    [Route("{controller")]
+    [Route("{controller}")]
     public class BookingController : Controller {
         BookingService _bookingService;
 
