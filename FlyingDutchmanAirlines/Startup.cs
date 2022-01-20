@@ -31,6 +31,9 @@ namespace FlyingDutchmanAirlines {
             //inject dependencies required for the FlightService
             services.AddTransient(typeof(FlightRepository), typeof(FlightRepository));
             services.AddTransient(typeof(AirportRepository), typeof(AirportRepository));
+            services.AddTransient(typeof(FlightRepository), typeof(FlightRepository));
+            services.AddTransient(typeof(CustomerRepository), typeof(CustomerRepository));
+            services.AddTransient(typeof(BookingRepository), typeof(BookingRepository));
             
             //inject dependencies required for the above repositories
             services.AddTransient(typeof(FlyingDutchmanAirlinesContext), typeof(FlyingDutchmanAirlinesContext));
